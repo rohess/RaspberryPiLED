@@ -1,3 +1,6 @@
+#
+# main file for LED strip gain display
+#
 import pyaudio
 import numpy as np
 import config
