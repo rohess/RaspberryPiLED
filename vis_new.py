@@ -21,8 +21,8 @@ def microphone_update(audio_samples):
     vol = np.max(np.abs(y_data))
     if config.DEBUG:
         print(str(vol))
-    if config.USE_GUI:
-        update_bar_graph(vol)
+    if config.USE_LED:
+        update_led-strip(vol)
     if config.USE_GUI:
         graph_update(vol)
         app.processEvents()
@@ -35,7 +35,7 @@ def graph_update(vol):
     bar_plot.addItem(bg1)
 
 
-def update_bar_graph(vol):
+def update_led_strip(vol):
     # This routine sends output to the LED Strip
     # input is the mic level between 0 and 1
     # We set the colors, judging by the sounds' "position" on the strip.

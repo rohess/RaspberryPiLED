@@ -26,6 +26,8 @@ def start_stream(callback):
             if time.time() > prev_ovf_time + 1:
                 prev_ovf_time = time.time()
                 print("Error: ", err)
+    
+    # todo add keyboard handler to stop loop 
     stream.stop_stream()
     stream.close()
     p.terminate()
