@@ -9,7 +9,7 @@ def start_stream(callback):
     p = pyaudio.PyAudio()
     frames_per_buffer = int(config.MIC_RATE / config.FPS)
     stream = p.open(format=pyaudio.paInt16,
-                    input_device_index=2,
+                    input_device_index=1,
                     channels=1,
                     rate=config.MIC_RATE,
                     input=True,

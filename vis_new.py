@@ -5,11 +5,13 @@ import pyaudio
 import numpy as np
 import config
 import microphone
-import RPi.GPIO as GPIO
-import Adafruit_WS2801
-import Adafruit_GPIO.SPI as SPI
-import pyqtgraph as pg
-from pyqtgraph.Qt import QtCore, QtGui
+if config.USE_GUI:
+    import pyqtgraph as pg
+    from pyqtgraph.Qt import QtCore, QtGui
+if config.USE_LED:
+    import RPi.GPIO as GPIO
+    import Adafruit_WS2801
+    import Adafruit_GPIO.SPI as SPI
 
 
 def microphone_update(audio_samples):
@@ -19,7 +21,8 @@ def microphone_update(audio_samples):
     vol = np.max(np.abs(y_data))
     if config.DEBUG:
         print(str(vol))
-    update_bar_graph(vol)
+    if config.USE_GUI:
+        update_bar_graph(vol)
     if config.USE_GUI:
         graph_update(vol)
         app.processEvents()
@@ -90,17 +93,17 @@ if __name__ == '__main__':
         bar_plot = layout.addPlot(title='Microphone Level', colspan=3)
         bg1 = pg.BarGraphItem(x=[0], height=[0], width=0.3, brush='g')
         bar_plot.addItem(bg1)
-
-    # Initialize LEDs and set to red
-    SPI_PORT = 0
-    SPI_DEVICE = 0
-    PIXEL_COUNT = 32
-    pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
-    pixels.clear()
-    color = (0, 0, 255)
-    for i in range(32):
-        pixels.set_pixel(i, Adafruit_WS2801.RGB_to_color(color[0], color[1], color[2]))
-    pixels.show()
+    if config.USE_LED:
+        # Initialize LEDs and set to red
+        SPI_PORT = 0
+        SPI_DEVICE = 0
+        PIXEL_COUNT = 32
+        pixels = Adafruit_WS2801.WS2801Pixels(PIXEL_COUNT, spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE), gpio=GPIO)
+        pixels.clear()
+        color = (0, 0, 255)
+        for i in range(32):
+            pixels.set_pixel(i, Adafruit_WS2801.RGB_to_color(color[0], color[1], color[2]))
+        pixels.show()
     p = pyaudio.PyAudio()
     info = p.get_host_api_info_by_index(0)
     num_devices = info.get('deviceCount')
