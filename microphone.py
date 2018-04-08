@@ -7,6 +7,11 @@ import config
 
 def start_stream(callback):
     p = pyaudio.PyAudio()
+    info = p.get_host_api_info_by_index(0)
+    num_devices = info.get('deviceCount')
+    for i in range(0, num_devices):
+        if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
+            print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
     frames_per_buffer = int(config.MIC_RATE / config.FPS)
     stream = p.open(format=pyaudio.paInt16,
                     input_device_index=1,
@@ -26,8 +31,8 @@ def start_stream(callback):
             if time.time() > prev_ovf_time + 1:
                 prev_ovf_time = time.time()
                 print("Error: ", err)
-    
-    # todo add keyboard handler to stop loop 
+
+    # todo add keyboard handler to stop loop
     stream.stop_stream()
     stream.close()
     p.terminate()

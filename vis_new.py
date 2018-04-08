@@ -1,10 +1,10 @@
 #
 # main file for LED strip gain display
 #
-import pyaudio
 import numpy as np
 import config
-import microphone
+from qt_gui import UserInterface
+from audio import Microphone
 if config.USE_GUI:
     import pyqtgraph as pg
     from pyqtgraph.Qt import QtCore, QtGui
@@ -24,15 +24,8 @@ def microphone_update(audio_samples):
     if config.USE_LED:
         update_led-strip(vol)
     if config.USE_GUI:
-        graph_update(vol)
-        app.processEvents()
-
-
-def graph_update(vol):
-    global bg1
-    bar_plot.clear()
-    bg1 = pg.BarGraphItem(x=[0], height=vol, width=0.3, brush='g')
-    bar_plot.addItem(bg1)
+        ui.graph_update(vol)
+        ui.process_events()
 
 
 def update_led_strip(vol):
@@ -59,40 +52,10 @@ def update_led_strip(vol):
         pixels.set_pixel(z, Adafruit_WS2801.RGB_to_color(color1[0], color1[1], color1[2]))
     pixels.show()
 
-
-def init_gui():
-    app1 = QtGui.QApplication([])
-    view1 = pg.GraphicsView()
-    layout1 = pg.GraphicsLayout(border=(100, 100, 100))
-    view1.setCentralItem(layout1)
-    view1.show()
-    view1.setWindowTitle('Visualization Demo')
-    view1.resize(800, 600)
-    # create bar plot
-    bar_plot1 = layout1.addPlot(title='Microphone Level', colspan=3)
-    bg = pg.BarGraphItem(x=[0], height=[0], width=0.3, brush='g')
-    bar_plot1.addItem(bg)
-    return app1, bg, bar_plot1
-
-
 if __name__ == '__main__':
     # Creates GUI window if the user chooses to do so
-    bg1 = None
-    app = None
-    bar_plot = None
-    print(config.USE_GUI)
     if config.USE_GUI:
-        app = QtGui.QApplication([])
-        view = pg.GraphicsView()
-        layout = pg.GraphicsLayout(border=(100, 100, 100))
-        view.setCentralItem(layout)
-        view.show()
-        view.setWindowTitle('Visualization Demo')
-        view.resize(800, 600)
-        # create bar plot
-        bar_plot = layout.addPlot(title='Microphone Level', colspan=3)
-        bg1 = pg.BarGraphItem(x=[0], height=[0], width=0.3, brush='g')
-        bar_plot.addItem(bg1)
+        ui = UserInterface()
     if config.USE_LED:
         # Initialize LEDs and set to red
         SPI_PORT = 0
@@ -104,12 +67,10 @@ if __name__ == '__main__':
         for i in range(32):
             pixels.set_pixel(i, Adafruit_WS2801.RGB_to_color(color[0], color[1], color[2]))
         pixels.show()
-    p = pyaudio.PyAudio()
-    info = p.get_host_api_info_by_index(0)
-    num_devices = info.get('deviceCount')
-    for i in range(0, num_devices):
-        if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
-            print("Input Device id ", i, " - ", p.get_device_info_by_host_api_device_index(0, i).get('name'))
 
     # Start listening to live audio stream
-    microphone.start_stream(microphone_update)
+    mic = Microphone()
+    try:
+        mic.start_stream(microphone_update)
+    except KeyboardInterrupt:
+        pass
