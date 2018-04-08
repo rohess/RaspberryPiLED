@@ -19,6 +19,4 @@ class UserInterface:
         self.bar_plot.clear()
         bg = pg.BarGraphItem(x=[0], height=vol, width=0.3, brush='g')
         self.bar_plot.addItem(bg)
-
-    def process_events(self):
         self.app.processEvents()

@@ -1,16 +1,14 @@
 """Settings for audio reactive LED strip"""
-import os
 
-PIXEL_COUNT = 32
+SPI_PORT = 0
+SPI_DEV = 0
+"""Port and Device for SPI access on RasPi"""
 
 DEBUG = True
 """Whether or not to display debug prints"""
 
 N_PIXELS = 32
 """Number, of pixels in the LED strip"""
-
-GAMMA_TABLE_PATH = os.path.join(os.path.dirname(__file__), 'gamma_table.npy')
-"""Location of the gamma correction table"""
 
 MIC_RATE = 44100
 """Sampling frequency of the microphone in Hz"""
